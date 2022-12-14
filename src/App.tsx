@@ -58,11 +58,19 @@ function App() {
     saveApplicationState()
   }
 
+  const handleReset = ()=>{
+    console.log("hello");
+    
+    localStorage.removeItem(localStorageVariable)
+    window.location.reload();
+  }
+
 
   return (
     <div className='App'>
       <h1>German Nouns</h1>
-      <h2>You have learned {nouns.reduce((total, noun) => total + (noun.isLearned ? 1 : 0), 0)} are {nouns.length} nouns.</h2>
+      <h2>You have learned {nouns.reduce((total, noun) => total + (noun.isLearned ? 1 : 0), 0)} are {nouns.length} nouns.{' '}<button onClick={()=>handleReset()}>Reset Game</button></h2>
+      
       <div className='nouns'>
         {nouns.map((noun, key) => {
           return (
