@@ -2,22 +2,41 @@ import { useState, useEffect } from 'react'
 import './App.scss'
 import axios from 'axios'
 
+
+
+const nounsUrl = 'https://edwardtanguay.vercel.app/share/germanNouns.json'
+
+interface INoun {
+  article: string;
+  singular: string;
+  plural: string;
+}
+
 function App() {
-  const [nouns, setNouns] = useState([])
+  const [nouns, setNouns] = useState<INoun[]>([])
 
-  const nounsUrl = 'https://edwardtanguay.vercel.app/share/germanNouns.json'
-
-  useEffect(()=>{
-    (async()=>{
+  useEffect(() => {
+    (async () => {
       const response = await axios.get(nounsUrl)
       setNouns(response.data)
     })();
   })
 
+  
+  
   return (
     <div className="App">
-        <h1>German Nouns</h1>
-        <p>There are {nouns.length} nouns.</p>
+      <h1>German Nouns</h1>
+      <h2>There are {nouns.length} nouns.</h2>
+      <div className="nouns">
+        {nouns.map((noun, key) => {
+          return (
+            <div className="noun" key={noun.singular}>
+              {noun.singular}
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }
