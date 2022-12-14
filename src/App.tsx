@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import './App.scss'
 import axios from 'axios'
 import * as tools from './tools'
@@ -6,6 +6,7 @@ import * as tools from './tools'
 
 
 const nounsUrl = 'https://edwardtanguay.vercel.app/share/germanNouns.json'
+const localStorageVariable = "german-noun-game"
 
 interface INoun {
   article: string;
@@ -20,45 +21,67 @@ function App() {
 
   useEffect(() => {
     (async () => {
-      let response = (await axios.get(nounsUrl)).data
-      response = tools.randomize(response)
-      const _nouns: INoun[] = []
-      response.forEach((rawNoun: any) => {
-        const _noun = {
-          ...rawNoun,
-          isOpen: false,
-          isLearned: false,
-        }
-        _nouns.push(_noun)
-      })
+      let _nouns: INoun[] = [];
+      const localStorageItems = localStorage.getItem(localStorageVariable)
+      if(localStorageItems !== null) {
+         _nouns = JSON.parse(localStorageItems)
+      } else {
+        let response = (await axios.get(nounsUrl)).data
+        response = tools.randomize(response)
+
+        response.forEach((rawNoun: any) => {
+          const _noun = {
+            ...rawNoun,
+            isOpen: false,
+            isLearned: false,
+          }
+          _nouns.push(_noun)
+        })
+      }
+
       setNouns(_nouns)
     })();
   }, [])
 
-  const handleToggleFlashCard = (noun: INoun) => {
-      noun.isOpen = !noun.isOpen
-      setNouns([...nouns])
+  const saveApplicationState = () => {
+    localStorage.setItem(localStorageVariable, JSON.stringify(nouns))
+    setNouns([...nouns])
+  }
+
+  const handleToggleFlashcard = (noun: INoun) => {
+    noun.isOpen = !noun.isOpen
+    saveApplicationState()
+  }
+
+  const handleIsLearned = (noun: INoun) => {
+    noun.isLearned = !noun.isLearned
+    saveApplicationState()
   }
 
 
   return (
     <div className='App'>
       <h1>German Nouns</h1>
-      <h2>There are {nouns.length} nouns.</h2>
+      <h2>You have learned {nouns.reduce((total, noun) => total + (noun.isLearned ? 1 : 0), 0)} are {nouns.length} nouns.</h2>
       <div className='nouns'>
         {nouns.map((noun, key) => {
           return (
-            <div className='noun' key={noun.singular}>
-              <div className='front' onClick={() => handleToggleFlashCard(noun)}>{noun.singular}</div>
-              {noun.isOpen && (
-                <div className='back'>
-                  <div className="singular">
-                    {noun.article} {noun.singular}
-                  </div>
-                  <div className="plural">{noun.plural}</div>
+            <React.Fragment key={noun.singular}>
+              {!noun.isLearned && (
+                <div className='noun' >
+                  <div className='front' onClick={() => handleToggleFlashcard(noun)}>{noun.singular}</div>
+                  {noun.isOpen && (
+                    <div className='back'>
+                      <div className="singular">
+                        {noun.article} {noun.singular}
+                      </div>
+                      <div className="plural">{noun.plural}</div>
+                      <button onClick={() => handleIsLearned(noun)}>isLearned</button>
+                    </div>
+                  )}
                 </div>
               )}
-            </div>
+            </React.Fragment>
           )
         })}
       </div>
