@@ -59,8 +59,6 @@ function App() {
   }
 
   const handleReset = ()=>{
-    console.log("hello");
-    
     localStorage.removeItem(localStorageVariable)
     window.location.reload();
   }
