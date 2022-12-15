@@ -16,7 +16,7 @@ Little Game to learn arcticels of German nouns.
 **Features**
 
 - nouns are loaded in random order
-- Users progress (nouns leraned) is saved in local storage
+- Users progress (nouns learned) is saved in local storage
 - User can reset the game anytime to double check learned nouns
 
 :popcorn: Enjoy the [Live Demo](german-nouns-game.vercel.app)
